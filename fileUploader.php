@@ -30,6 +30,7 @@ class FileUploader
 
 	/**
 	 * This will reduce storing the same image with the same name
+	 * Use something like a username or something uinque to a user
 	 * 
 	 * @param key
 	 * */
