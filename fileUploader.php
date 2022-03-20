@@ -3,7 +3,33 @@
 /**
  * FileUploader class
  * 
- * This will handle the file uploads easily
+ * How to use this
+ * 
+ * 1. include or require the file
+ * 2. create a new instance
+ * 		
+ * 		$fileUploader = new FileUploader($_FILES[<your_file_name>], 'images/', 5000000);
+ * 
+ * 4. Make sure that the destination folder exists and writable
+ * 
+ * 3. set the key
+ * 		
+ * 	  use something like a username or something specific to a user
+ * 		$fileUploader->setKey(<user_name>);
+ * 
+ * 4. store the file
+ * 
+ * 		$isUploaded = $fileUploader->store();
+ * 
+ * 5. Validate the upload
+ * 
+ * 		if($isUploaded['status'] === 1) {
+ * 			// success, save to db
+ * 			$fileName = $isUploaded['data'];
+ * 		} else {
+ * 			// file not uploaded
+ * 			$errors = $isUploaded['data'];
+ * 		}
  */
 class FileUploader
 {
