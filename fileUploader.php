@@ -8,7 +8,7 @@
  * 1. include or require the file
  * 2. create a new instance
  * 		
- * 		$fileUploader = new FileUploader($_FILES[<your_file_name>], 'images/', 5000000);
+ * 		$fileUploader = new FileUploader($_FILES[<your_file_name>], './images', 5000000);
  * 
  * 4. Make sure that the destination folder exists and writable
  * 
@@ -76,13 +76,24 @@ class FileUploader
 	 * */
 	public function store()
 	{
+
 		// All errors belongs to the file upload
 		$errors = [];
+
+		// check
 
 		$name = $this->file['name'];
 		$temp_name = $this->file['tmp_name'];
 		$size = $this->file['size'];
 		$extension = explode('.', $this->file['name'])[1];
+
+		/**
+		 * Check if the destination folder exists and it is writable
+		 * */
+		if(!is_dir(__DIR__ . '/' . $this->path) || !is_writable(__DIR__ . '/' . $this->path))
+		{
+			$errors[] = 'Destination folder does not exists or not writable';
+		}
 
 		// Check for file size
 		if($this->sizeCheck($size) === false) {
@@ -102,10 +113,21 @@ class FileUploader
 			 * Making a safe file name to avoid same filenames
 			 * */
 			$randomKey = $this->makeRandomKey();
-			$file_name = $this->key . '-' . $randomKey . '-' . $name;
+
+			/**
+			 * If the private key is set it will append to the name,
+			 * otherwise it will just ignore
+			 * */
+			if($this->key)
+			{
+				$file_name = $this->key . '-' . $randomKey . '-' . $name;
+			} else
+			{
+				$file_name = $randomKey . '-' . $name;
+			}
 
 			// Storing the actuall file
-			move_uploaded_file($temp_name, $this->path . $file_name);
+			move_uploaded_file($temp_name, $this->path . '/' . $file_name);
 
 			/**
 			 * Returning the filename so the user can save it in the database,
@@ -154,6 +176,8 @@ class FileUploader
 
 	/**
 	 * This will generate a random number to append the filename
+	 * 
+	 * @return integer
 	 * */
 	public function makeRandomKey()
 	{
